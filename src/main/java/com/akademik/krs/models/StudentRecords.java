@@ -35,4 +35,7 @@ public class StudentRecords extends Audit<String> implements Serializable {
     @JoinColumn(name = "scoreId", nullable = false, insertable = true, referencedColumnName = "id")
     private ScoreParameters scoreParameters;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "krsParametersId", nullable = false, insertable = true, referencedColumnName = "id")
+    private KrsParameters krsParameters;
 }

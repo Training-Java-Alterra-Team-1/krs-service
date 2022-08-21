@@ -1,10 +1,9 @@
 package com.akademik.krs.services;
 
+import com.akademik.krs.dto.KrsSubmitDto;
 import com.akademik.krs.dto.StudentRecordsDto;
-import com.akademik.krs.models.Courses;
-import com.akademik.krs.models.ScoreParameters;
-import com.akademik.krs.models.StudentRecords;
-import com.akademik.krs.models.Students;
+import com.akademik.krs.models.*;
+import com.akademik.krs.repositories.KrsParametersRepository;
 import com.akademik.krs.repositories.StudentRecordsRepository;
 import io.swagger.annotations.ApiOperation;
 import lombok.SneakyThrows;
@@ -16,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +26,9 @@ import java.util.Map;
 public class StudentRecordsService {
     @Autowired
     private StudentRecordsRepository srRepository;
+
+    @Autowired
+    private KrsParametersRepository kpRepository;
 
     @SneakyThrows(Exception.class)
     @ApiOperation("Add new record")
@@ -55,10 +58,54 @@ public class StudentRecordsService {
         ScoreParameters scr = new ScoreParameters();
         scr.setId(recordReq.getScoreId());
         newRecord.setScoreParameters(scr);
+        LocalDateTime todayDateTime = LocalDateTime.now();
+        newRecord.setCreatedAt(todayDateTime);
 
         srRepository.save(newRecord);
 
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(recordReq);
+    }
+
+    @SneakyThrows(Exception.class)
+    @ApiOperation("Submit KRS per Semester")
+    public ResponseEntity<Object> submitKRS(KrsSubmitDto krsDto){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        if(krsDto.getStudentId() == null || krsDto.getStudentId() == 0){
+            Map<String, Object> errResp = new HashMap<String, Object>();
+            errResp.put("error_message", "Student Id is mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+        }
+        if(krsDto.getSemester() == null || krsDto.getSemester() == 0){
+            Map<String, Object> errResp = new HashMap<String, Object>();
+            errResp.put("error_message", "Semester is mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+        }
+
+        List<StudentRecords> listRec = new ArrayList<StudentRecords>();
+        if(srRepository.findStudentRecordsByStudentsIdAndSemester(krsDto.getStudentId(), krsDto.getSemester()) != null){
+            listRec = srRepository.findStudentRecordsByStudentsIdAndSemester(krsDto.getStudentId(), krsDto.getSemester());
+        }else{
+            Map<String, Object> errResp = new HashMap<String, Object>();
+            errResp.put("error_message", "The student did not take any courses on this semester.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+        }
+
+        KrsParameters kparam = kpRepository.findKrsParametersByParameterCodeAndValue("KRS_STATUS", "SUBMITTED");
+
+        for(StudentRecords item: listRec){
+            KrsParameters krs = new KrsParameters();
+            krs.setId(kparam.getId());
+            item.setKrsParameters(krs);
+            LocalDateTime todayDateTime = LocalDateTime.now();
+            item.setUpdatedAt(todayDateTime);
+            srRepository.save(item);
+        }
+
+        Map<String, Object> successResp = new HashMap<String, Object>();
+        successResp.put("message", listRec.size() + " student records processed. KRS submitted.");
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(successResp);
     }
 
     @SneakyThrows(Exception.class)

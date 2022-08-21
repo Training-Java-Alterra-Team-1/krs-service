@@ -1,5 +1,6 @@
 package com.akademik.krs.controller;
 
+import com.akademik.krs.dto.KrsSubmitDto;
 import com.akademik.krs.dto.StudentRecordsDto;
 import com.akademik.krs.services.StudentRecordsService;
 import lombok.SneakyThrows;
@@ -21,6 +22,13 @@ public class StudentRecordsController {
     public ResponseEntity<Object> addNewRecord(@RequestBody StudentRecordsDto recordRequest){
         log.info("api POST /api/v1/student-records/add is hit.");
         return srService.addRecord(recordRequest);
+    }
+
+    @SneakyThrows(Exception.class)
+    @PostMapping(path = "/student-records/submitkrs", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> submitKRS(@RequestBody KrsSubmitDto krsRequest){
+        log.info("api POST /api/v1/student-records/submitkrs is hit.");
+        return srService.submitKRS(krsRequest);
     }
 
     @SneakyThrows(Exception.class)
