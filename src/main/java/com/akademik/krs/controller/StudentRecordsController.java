@@ -32,7 +32,7 @@ public class StudentRecordsController {
     }
 
     @SneakyThrows(Exception.class)
-    @GetMapping(path = "/student-records", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/student-records/{studentId}/{semester}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getStudentRecordsPerSemester(@RequestParam Integer studentId, @RequestParam Integer semester){
         log.info("api GET /api/v1/student-records?studentId={studentId}&semester={semester}");
         return srService.getStudentRecords(studentId, semester);
