@@ -23,10 +23,10 @@ public class KrsApplication {
 	@Bean
 	public CommandLineRunner run(KrsParametersService kpService){
 		return args -> {
-			kpService.addKrsParameter("KRS_STATUS", "DRAFT");
-			kpService.addKrsParameter("KRS_STATUS", "SUBMITTED");
-			kpService.addKrsParameter("KRS_STATUS", "APPROVED");
-			kpService.addKrsParameter("KRS_STATUS", "REJECTED");
+//			kpService.addKrsParameter("KRS_STATUS", "DRAFT");
+//			kpService.addKrsParameter("KRS_STATUS", "SUBMITTED");
+//			kpService.addKrsParameter("KRS_STATUS", "APPROVED");
+//			kpService.addKrsParameter("KRS_STATUS", "REJECTED");
 		};
 	}
 }
