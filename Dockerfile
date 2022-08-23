@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM openjdk:8
 EXPOSE 8083
-COPY target/krs-0.0.1.jar krs-0.0.1.jar
-ENTRYPOINT ["java", "-jar", "/krs-0.0.1.jar"]
+COPY target/krs-service.jar krs-service.jar
+ENTRYPOINT ["java", "-jar", "/krs-service.jar"]
