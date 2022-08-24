@@ -18,30 +18,30 @@ public class StudentRecordsController {
     private StudentRecordsService srService;
 
     @SneakyThrows(Exception.class)
-    @PostMapping(path = "/student-records/add", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/student-record", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> addNewRecord(@RequestBody StudentRecordsDto recordRequest){
-        log.info("api POST /api/v1/student-records/add is hit.");
+        log.info("api POST /api/v1/student-record is hit.");
         return srService.addRecord(recordRequest);
     }
 
     @SneakyThrows(Exception.class)
-    @PostMapping(path = "/student-records/submitkrs", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/student-records", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> submitKRS(@RequestBody KrsSubmitDto krsRequest){
-        log.info("api POST /api/v1/student-records/submitkrs is hit.");
+        log.info("api POST /api/v1/student-records is hit.");
         return srService.submitKRS(krsRequest);
     }
 
     @SneakyThrows(Exception.class)
-    @GetMapping(path = "/student-records/{studentId}/{semester}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/student-record/{studentId}/{semester}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getStudentRecordsPerSemester(@RequestParam Integer studentId, @RequestParam Integer semester){
-        log.info("api GET /api/v1/student-records?studentId={studentId}&semester={semester}");
+        log.info("api GET /api/v1/student-record?studentId={studentId}&semester={semester}");
         return srService.getStudentRecords(studentId, semester);
     }
 
     @SneakyThrows(Exception.class)
-    @DeleteMapping(path = "/student-records/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/student-record/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> deleteStudentRecord(@PathVariable Integer id){
-        log.info("api DELETE /api/v1/student-records/{id} is hit.");
+        log.info("api DELETE /api/v1/student-record/{id} is hit.");
         return srService.deleteStudentRecord(id);
     }
 

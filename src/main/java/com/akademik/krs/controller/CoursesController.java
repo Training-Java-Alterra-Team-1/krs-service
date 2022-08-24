@@ -17,23 +17,23 @@ public class CoursesController {
     private CoursesService coursesService;
 
     @SneakyThrows(Exception.class)
-    @PostMapping(path = "/mata-kuliah/add", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> addNewCourse(@RequestBody CoursesDto courseRequest){
-        log.info("api POST /api/v1/mata-kuliah is hit.");
+        log.info("api POST /api/v1/course is hit.");
         return coursesService.addCourse(courseRequest);
     }
 
     @SneakyThrows(Exception.class)
-    @GetMapping(path = "/mata-kuliah/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/course/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getCourseById(@PathVariable Integer id){
-        log.info("api GET /api/v1/mata-kuliah/{id} is hit.");
+        log.info("api GET /api/v1/course/{id} is hit.");
         return coursesService.getCourseById(id);
     }
 
     @SneakyThrows(Exception.class)
-    @GetMapping(path = "/mata-kuliah", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getCourseByQueryParam(@RequestParam(required = false) String name, @RequestParam(required = false) Integer credits){
-        log.info("api GET /api/v1/mata-kuliah?name={name}&credits={credits} is hit.");
+        log.info("api GET /api/v1/course?name={name}&credits={credits} is hit.");
         return coursesService.getCourseByNameOrCredits(name, credits);
     }
 }
