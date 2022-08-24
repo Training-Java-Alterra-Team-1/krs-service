@@ -36,34 +36,36 @@ public class StudentRecordsService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        if(
-                recordReq.getStudentId() == null || recordReq.getStudentId() == 0 ||
-                        recordReq.getSemester() == null || recordReq.getSemester() == 0 ||
-                        recordReq.getCourseId() == null || recordReq.getCourseId() == 0 ||
-                        recordReq.getScoreId() == null || recordReq.getScoreId() == 0
-        ){
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "All fields are mandatory and its value cannot be 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+        Map<String, Object> response = new HashMap<String, Object>();
+        if(recordReq.getStudentId() == null || recordReq.getStudentId() == 0
+                || recordReq.getSemester() == null || recordReq.getSemester() == 0
+                || recordReq.getCourseId() == null || recordReq.getCourseId() == 0
+                || recordReq.getScoreId() == null || recordReq.getScoreId() == 0)
+        {
+            response.put("success", false);
+            response.put("error", "All fields are mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
 
-        StudentRecords newRecord = new StudentRecords();
+        StudentRecords studentRecord = new StudentRecords();
         Students std = new Students();
         std.setId(recordReq.getStudentId());
-        newRecord.setStudents(std);
+        studentRecord.setStudents(std);
         Courses crs = new Courses();
         crs.setId(recordReq.getCourseId());
-        newRecord.setCourses(crs);
-        newRecord.setSemester(recordReq.getSemester());
+        studentRecord.setCourses(crs);
+        studentRecord.setSemester(recordReq.getSemester());
         ScoreParameters scr = new ScoreParameters();
         scr.setId(recordReq.getScoreId());
-        newRecord.setScoreParameters(scr);
+        studentRecord.setScoreParameters(scr);
         LocalDateTime todayDateTime = LocalDateTime.now();
-        newRecord.setCreatedAt(todayDateTime);
+        studentRecord.setCreatedAt(todayDateTime);
 
-        srRepository.save(newRecord);
+        srRepository.save(studentRecord);
 
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(recordReq);
+        response.put("success", true);
+        response.put("data", studentRecord);
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(response);
     }
 
     @SneakyThrows(Exception.class)
@@ -72,24 +74,25 @@ public class StudentRecordsService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        Map<String, Object> response = new HashMap<String, Object>();
         if(krsDto.getStudentId() == null || krsDto.getStudentId() == 0){
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "Student Id is mandatory and its value cannot be 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "Student Id is mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
         if(krsDto.getSemester() == null || krsDto.getSemester() == 0){
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "Semester is mandatory and its value cannot be 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "Semester is mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
 
         List<StudentRecords> listRec = new ArrayList<StudentRecords>();
         if(srRepository.findStudentRecordsByStudentsIdAndSemester(krsDto.getStudentId(), krsDto.getSemester()) != null){
             listRec = srRepository.findStudentRecordsByStudentsIdAndSemester(krsDto.getStudentId(), krsDto.getSemester());
         }else{
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "The student did not take any courses on this semester.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "The student did not take any courses on this semester.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
 
         KrsParameters kparam = kpRepository.findKrsParametersByParameterCodeAndValue("KRS_STATUS", "SUBMITTED");
@@ -103,9 +106,9 @@ public class StudentRecordsService {
             srRepository.save(item);
         }
 
-        Map<String, Object> successResp = new HashMap<String, Object>();
-        successResp.put("message", listRec.size() + " student records processed. KRS submitted.");
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(successResp);
+        response.put("success", true);
+        response.put("message", listRec.size() + " student records processed. KRS submitted.");
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(response);
     }
 
     @SneakyThrows(Exception.class)
@@ -125,23 +128,26 @@ public class StudentRecordsService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        Map<String, Object> response = new HashMap<String, Object>();
         if(studentId == null || studentId == 0){
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "Student Id is mandatory and its value cannot be 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "Student Id is mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
         if(semester == null || semester == 0){
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "Semester is mandatory and its value cannot be 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "Semester is mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
 
-        List<StudentRecords> resp = new ArrayList<StudentRecords>();
+        List<StudentRecords> studentRecords = new ArrayList<StudentRecords>();
         if(srRepository.findStudentRecordsByStudentsIdAndSemester(studentId, semester) != null){
-            resp = srRepository.findStudentRecordsByStudentsIdAndSemester(studentId, semester);
+            studentRecords = srRepository.findStudentRecordsByStudentsIdAndSemester(studentId, semester);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(resp);
+        response.put("success", true);
+        response.put("data", studentRecords);
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(response);
     }
 
     @SneakyThrows(Exception.class)
@@ -150,23 +156,24 @@ public class StudentRecordsService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        Map<String, Object> response = new HashMap<String, Object>();
         if(studentRecordId == null || studentRecordId == 0){
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "Student record Id is mandatory and its value cannot be 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "Student record Id is mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
 
         StudentRecords sr = srRepository.findStudentRecordsById(studentRecordId);
         if(sr == null){
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "No student record found.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "No student record found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
 
         srRepository.delete(sr);
-        Map<String, Object> successResp = new HashMap<String, Object>();
-        successResp.put("message", "Student record deleted.");
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(successResp);
+        response.put("success", true);
+        response.put("message", "Selected student record has been deleted");
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(response);
     }
 
     @SneakyThrows(Exception.class)
@@ -175,29 +182,30 @@ public class StudentRecordsService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        Map<String, Object> response = new HashMap<String, Object>();
         if(studentId == null || studentId == 0){
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "Student Id is mandatory and its value cannot be 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "Student Id is mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
         if(semester == null || semester == 0){
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "Semester is mandatory and its value cannot be 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "Semester is mandatory and its value cannot be 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
 
-        List<StudentRecords> resp = new ArrayList<StudentRecords>();
+        List<StudentRecords> studentRecords = new ArrayList<StudentRecords>();
         if(srRepository.findStudentRecordsByStudentsIdAndSemester(studentId, semester) != null){
-            resp = srRepository.findStudentRecordsByStudentsIdAndSemester(studentId, semester);
-            srRepository.deleteAll(resp);
+            studentRecords = srRepository.findStudentRecordsByStudentsIdAndSemester(studentId, semester);
+            srRepository.deleteAll(studentRecords);
         }else{
-            Map<String, Object> errResp = new HashMap<String, Object>();
-            errResp.put("error_message", "No student records found.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(errResp);
+            response.put("success", false);
+            response.put("error", "No student records found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(response);
         }
 
-        Map<String, Object> successResp = new HashMap<String, Object>();
-        successResp.put("message", "Student records deleted.");
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(successResp);
+        response.put("success", true);
+        response.put("message", "Selected student records has been deleted");
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(response);
     }
 }
