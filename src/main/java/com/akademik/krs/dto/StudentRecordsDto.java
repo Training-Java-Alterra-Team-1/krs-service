@@ -12,4 +12,5 @@ public class StudentRecordsDto {
     private Integer courseId;
     private Integer semester;
     private Integer scoreId;
+    private Integer statusKRS;
 }

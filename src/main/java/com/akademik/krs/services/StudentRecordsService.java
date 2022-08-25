@@ -60,6 +60,9 @@ public class StudentRecordsService {
         studentRecord.setScoreParameters(scr);
         LocalDateTime todayDateTime = LocalDateTime.now();
         studentRecord.setCreatedAt(todayDateTime);
+        KrsParameters krsp = new KrsParameters();
+        krsp.setId(recordReq.getStatusKRS());
+        studentRecord.setKrsParameters(krsp);
 
         srRepository.save(studentRecord);
 
