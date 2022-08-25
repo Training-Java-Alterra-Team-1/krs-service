@@ -40,7 +40,8 @@ public class StudentRecordsService {
         if(recordReq.getStudentId() == null || recordReq.getStudentId() == 0
                 || recordReq.getSemester() == null || recordReq.getSemester() == 0
                 || recordReq.getCourseId() == null || recordReq.getCourseId() == 0
-                || recordReq.getScoreId() == null || recordReq.getScoreId() == 0)
+                || recordReq.getScoreId() == null || recordReq.getScoreId() == 0
+                || recordReq.getStatusKRS() == null || recordReq.getStatusKRS() == 0)
         {
             response.put("success", false);
             response.put("error", "All fields are mandatory and its value cannot be 0");
